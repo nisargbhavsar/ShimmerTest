@@ -47,6 +47,12 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+		MainActivityFragment.stop();
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -102,9 +108,9 @@ public class MainActivity extends Activity {
 							position);
 					String address = temp.substring(temp.length() - 17,
 							temp.length());
-					Log.d("FUCK",address);
+					Log.d(".",address);
 					// Connect Device
-					new MainActivityFragment().connect(address);
+					MainActivityFragment.connect(address);
 
 					// Exit Dialog
 					dialog.dismiss();

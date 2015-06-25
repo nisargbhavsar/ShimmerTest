@@ -26,8 +26,7 @@ public final class R {
     }
     public static final class id {
         public static final int acceleration1=0x7f080002;
-        public static final int acceleration2=0x7f080003;
-        public static final int action_connect=0x7f080004;
+        public static final int action_connect=0x7f080003;
         public static final int container=0x7f080000;
         public static final int listView1=0x7f080001;
     }
