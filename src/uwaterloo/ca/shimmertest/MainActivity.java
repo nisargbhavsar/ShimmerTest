@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.bluetooth.*;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,6 +51,12 @@ public class MainActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		MainActivityFragment.stop();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		new MainActivityFragment().start();
 	}
 	
 	@Override
@@ -131,5 +138,9 @@ public class MainActivity extends Activity {
 						BluetoothAdapter.ACTION_REQUEST_ENABLE), 1);
 			}
 		}
+	}
+	
+	public Context getContext() {
+		return this;
 	}
 }
