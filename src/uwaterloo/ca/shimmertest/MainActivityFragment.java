@@ -20,15 +20,16 @@ import android.widget.Toast;
 
 public class MainActivityFragment extends Fragment {
 
-	private static Shimmer[] mMultiShimmer = new Shimmer[2];
-	private static String[] bluetoothAddress = new String[2];
+	private static Shimmer[] mMultiShimmer = new Shimmer[4];
+	private static String[] bluetoothAddress = new String[4];
 	private TextView acceleration = null;
 	private String info = "Bluetooth Address:\nAccelerometer:";
-	private boolean isConnecting = false;
 	private static boolean isPause = false;
 
 	private double[] acceleValue1 = new double[3];
 	private double[] acceleValue2 = new double[3];
+	private double[] acceleValue3 = new double[3];
+	private double[] acceleValue4 = new double[3];
 
 	private final Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -56,9 +57,10 @@ public class MainActivityFragment extends Fragment {
 
 		acceleration = (TextView) rootView.findViewById(R.id.acceleration1);
 
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < mMultiShimmer.length; i++) {
 			mMultiShimmer[i] = new Shimmer(rootView.getContext(), mHandler,
 					"Shimmer " + (i + 1), false);
+			mMultiShimmer[i].writeSamplingRate(30);
 			Log.d(".", "Initialized");
 		}
 		return rootView;
@@ -76,28 +78,24 @@ public class MainActivityFragment extends Fragment {
 	public void stateChangeEvent(int arg1) {
 		switch (arg1) {
 		case Shimmer.MSG_STATE_FULLY_INITIALIZED:
-			if (mMultiShimmer[0].getShimmerState() == Shimmer.STATE_CONNECTED) {
-				Log.d("ConnectionStatus", "Successful");
-				Toast.makeText(getActivity().getApplicationContext(),
-						"Connection Established", Toast.LENGTH_SHORT).show();
-				mMultiShimmer[0].startStreaming();
-			}
-			if (mMultiShimmer[1].getShimmerState() == Shimmer.STATE_CONNECTED) {
-				Log.d("ConnectionStatus", "Successful");
-				Toast.makeText(getActivity().getApplicationContext(),
-						"Connection Established", Toast.LENGTH_SHORT).show();
-				mMultiShimmer[1].startStreaming();
+			for (int i = 0; i < mMultiShimmer.length; i++) {
+				if (mMultiShimmer[i].getShimmerState() == Shimmer.STATE_CONNECTED) {
+					Log.d("ConnectionStatus", "Successful");
+					Toast.makeText(getActivity().getApplicationContext(),
+							"Connection Established", Toast.LENGTH_SHORT)
+							.show();
+					mMultiShimmer[i].startStreaming();
+				}
 			}
 			break;
 		case Shimmer.STATE_CONNECTING:
 			Log.d("ConnectionStatus", "Connecting");
 			Toast.makeText(getActivity().getApplicationContext(), "Connecting",
 					Toast.LENGTH_LONG).show();
-			isConnecting = true;
 			break;
 		case Shimmer.STATE_NONE:
 			Log.d("ConnectionStatus", "No State");
-			if (isConnecting) {
+			if (!isPause) {
 				Toast.makeText(getActivity().getApplicationContext(),
 						"Failed To Connect", Toast.LENGTH_SHORT).show();
 			}
@@ -132,6 +130,14 @@ public class MainActivityFragment extends Fragment {
 				"\nBluetooth Address: %s\nAccelerometer: %f, %f, %f",
 				mMultiShimmer[1].getBluetoothAddress(), acceleValue2[0],
 				acceleValue2[1], acceleValue2[2]);
+		info += String.format(
+				"\nBluetooth Address: %s\nAccelerometer: %f, %f, %f",
+				mMultiShimmer[2].getBluetoothAddress(), acceleValue3[0],
+				acceleValue3[1], acceleValue3[2]);
+		info += String.format(
+				"\nBluetooth Address: %s\nAccelerometer: %f, %f, %f",
+				mMultiShimmer[3].getBluetoothAddress(), acceleValue4[0],
+				acceleValue4[1], acceleValue4[2]);
 		acceleration.setText(info);
 	}
 
@@ -157,6 +163,7 @@ public class MainActivityFragment extends Fragment {
 		} else {
 			Log.d(",", "null");
 		}
+		isPause = false;
 	}
 
 	private void getValue(FormatCluster formatCluster,
@@ -168,6 +175,12 @@ public class MainActivityFragment extends Fragment {
 				break;
 			case "Shimmer 2":
 				acceleValue2[address] = formatCluster.mData;
+				break;
+			case "Shimmer 3":
+				acceleValue3[address] = formatCluster.mData;
+				break;
+			case "Shimmer 4":
+				acceleValue4[address] = formatCluster.mData;
 				break;
 			}
 		}
